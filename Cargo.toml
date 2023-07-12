@@ -10,7 +10,9 @@ clap = { version = "4.3.11", features = ["derive"] }
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = "2.1.0"
 inquire = { version = "0.6.2", features = ["editor"] }
+itertools = "0.11.0"
 paste = "1.0.13"
+termimad = "0.23.1"
 
 # Bundle SQLite3 with the code so it compiles on Windows
 [dependencies.libsqlite3-sys]

@@ -21,8 +21,30 @@ pub struct RecipeConstructor<'s> {
 
 impl Recipe {
   model_base!(order by recipes::name.asc());
+
+  pub fn markdown_string(&self) -> String {
+    RecipeConstructor {
+      name: &self.name,
+      instructions_markdown: &self.instructions_markdown,
+      notes_markdown: &self.notes_markdown,
+    }
+    .markdown_string()
+  }
 }
 
 impl<'s> RecipeConstructor<'s> {
   model_creates!(Recipe);
+
+  pub fn markdown_string(&self) -> String {
+    let instructions = self.instructions_markdown.trim();
+    let notes = self.notes_markdown.trim();
+
+    let notes = if notes.len() > 0 {
+      format!("\n**Notes:**\n{notes}")
+    } else {
+      "".into()
+    };
+
+    format!("## {}\n\n{}\n{}", self.name, instructions, notes,)
+  }
 }

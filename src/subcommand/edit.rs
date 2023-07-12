@@ -4,26 +4,28 @@ use inquire::validator::ValueRequiredValidator;
 use inquire::{Confirm, Editor, Text};
 use termimad::MadSkin;
 
-use crate::models::RecipeConstructor;
+use crate::models::{Recipe, RecipeConstructor};
 
 #[derive(Args)]
-pub struct CreateArgs {
-  /// Optional name for the recipe
-  #[clap(short, long)]
-  name: Option<String>,
+pub struct EditArgs {
+  /// Integer ID of the recipe to delete
+  id: i32,
 }
 
-const PLACEHOLDER_INSTRUCTIONS: &str = r#"1. Mix flour, milk, and **eggs** together.
-2. Slowly mix in the chocolate chips. _Don't stir too much_
-3. Add additional steps as needed ...
-
-Bake at 450°F for 20 minutes. Serve hot."#;
-
-impl CreateArgs {
+impl EditArgs {
   pub fn execute(self, conn: &mut SqliteConnection) -> super::Result<()> {
-    let mut name = self.name.unwrap_or_default();
-    let mut instructions_markdown = PLACEHOLDER_INSTRUCTIONS.to_string();
-    let mut notes_markdown = String::new();
+    let recipe = match Recipe::find_optional(&self.id, conn)? {
+      None => {
+        println!("No such recipe: {}", self.id);
+        return Ok(());
+      },
+
+      Some(recipe) => recipe,
+    };
+
+    let mut name = recipe.name;
+    let mut instructions_markdown = recipe.instructions_markdown;
+    let mut notes_markdown = recipe.notes_markdown;
 
     loop {
       name = Text::new("Recipe Name:")
@@ -56,14 +58,15 @@ impl CreateArgs {
       }
     }
 
-    let recipe = RecipeConstructor {
-      name: &name,
-      instructions_markdown: &instructions_markdown,
-      notes_markdown: &notes_markdown,
+    Recipe {
+      id: recipe.id,
+      name,
+      instructions_markdown,
+      notes_markdown,
     }
-    .insert_recipe(conn)?;
+    .update(conn)?;
 
-    println!("Created recipe: {} (ID: {})", recipe.name, recipe.id);
+    println!("Changes saved!");
 
     Ok(())
   }
