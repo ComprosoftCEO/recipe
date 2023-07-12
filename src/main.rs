@@ -1,6 +1,7 @@
 mod models;
 mod schema;
 mod subcommand;
+mod ui;
 
 use clap::Parser;
 use diesel::{Connection, SqliteConnection};

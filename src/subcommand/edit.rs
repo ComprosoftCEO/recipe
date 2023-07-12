@@ -1,10 +1,8 @@
 use clap::Args;
 use diesel::SqliteConnection;
-use inquire::validator::ValueRequiredValidator;
-use inquire::{Confirm, Editor, Text};
-use termimad::MadSkin;
 
-use crate::models::{Recipe, RecipeConstructor};
+use crate::models::Recipe;
+use crate::ui::RecipeEditor;
 
 #[derive(Args)]
 pub struct EditArgs {
@@ -23,51 +21,6 @@ impl EditArgs {
       Some(recipe) => recipe,
     };
 
-    let mut name = recipe.name;
-    let mut instructions_markdown = recipe.instructions_markdown;
-    let mut notes_markdown = recipe.notes_markdown;
-
-    loop {
-      name = Text::new("Recipe Name:")
-        .with_initial_value(&name)
-        .with_validator(ValueRequiredValidator::new("Recipe name cannot be empty"))
-        .prompt()?;
-
-      instructions_markdown = Editor::new("Instructions")
-        .with_file_extension(".md")
-        .with_predefined_text(&instructions_markdown)
-        .prompt()?;
-
-      notes_markdown = Editor::new("Notes")
-        .with_file_extension(".md")
-        .with_predefined_text(&notes_markdown)
-        .prompt()?;
-
-      let skin = MadSkin::default();
-      skin.print_text(
-        &RecipeConstructor {
-          name: &name,
-          instructions_markdown: &instructions_markdown,
-          notes_markdown: &notes_markdown,
-        }
-        .markdown_string(),
-      );
-
-      if Confirm::new("Does everything look good? (Y/N)").prompt()? {
-        break;
-      }
-    }
-
-    Recipe {
-      id: recipe.id,
-      name,
-      instructions_markdown,
-      notes_markdown,
-    }
-    .update(conn)?;
-
-    println!("Changes saved!");
-
-    Ok(())
+    RecipeEditor::from_recipe(recipe, conn)?.edit(conn)
   }
 }

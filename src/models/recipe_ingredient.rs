@@ -31,6 +31,37 @@ impl RecipeIngredient {
       notes_markdown: String::new(),
     }
   }
+
+  /// Note: ingredient ID will need to be filled in later using TUI
+  pub fn parse_from_str(input: &str, recipe_id: i32) -> Vec<(&str, RecipeIngredient)> {
+    let mut lines = input.lines().map(|s| s.trim()).filter(|s| !s.is_empty()).peekable();
+
+    let mut display_order = 1;
+    let mut result = Vec::new();
+    while let Some(line) = lines.next() {
+      let (quantity, ingredient) = line.split_once(":").unwrap_or(("", line));
+
+      // Next line is notes if it starts with "- "
+      let notes = match lines.peek() {
+        Some(next_line) if next_line.starts_with("- ") => lines.next().unwrap().strip_prefix("- ").unwrap(),
+        _ => "",
+      };
+
+      result.push((
+        ingredient,
+        RecipeIngredient {
+          recipe_id,
+          ingredient_id: -1, // Populated later
+          display_order,
+          quantity: quantity.trim().to_string(),
+          notes_markdown: notes.trim().to_string(),
+        },
+      ));
+      display_order += 1;
+    }
+
+    return result;
+  }
 }
 
 impl ManyToManyConstructor<Recipe, Ingredient> for RecipeIngredient {

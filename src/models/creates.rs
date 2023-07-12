@@ -1,7 +1,3 @@
-use diesel::prelude::*;
-
-sql_function! { fn last_insert_rowid() -> Integer; }
-
 // =======================
 //  Create for Primary Key
 // =======================

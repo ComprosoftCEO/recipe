@@ -1,5 +1,6 @@
 use diesel::prelude::*;
 
+use super::lower;
 use crate::schema::ingredients;
 
 #[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset)]
@@ -19,6 +20,18 @@ pub struct IngredientConstructor<'s> {
 
 impl Ingredient {
   model_base!(order by ingredients::name.asc());
+
+  // Get all ingredients that match any words of the name
+  pub fn find_by_name(input: &str, conn: &mut SqliteConnection) -> QueryResult<Vec<Self>> {
+    use crate::schema::ingredients::dsl::{ingredients, name};
+
+    let mut query = ingredients.into_boxed();
+    for word in input.split_whitespace() {
+      query = query.or_filter(lower(name).like(format!("%{}%", word)));
+    }
+
+    query.get_results(conn)
+  }
 }
 
 impl<'s> IngredientConstructor<'s> {
