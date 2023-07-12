@@ -1,5 +1,7 @@
 use clap::Args;
 use diesel::SqliteConnection;
+use horrorshow::{helper::doctype, html, Raw};
+use markdown::Options;
 use std::io::Write;
 use tempfile::Builder;
 use termimad::MadSkin;
@@ -14,6 +16,12 @@ pub struct PrintArgs {
   #[clap(short, long)]
   web: bool,
 }
+
+// CSS styles
+const HTML_STYLES: &str = r#"
+.markdown {
+}
+"#;
 
 impl PrintArgs {
   pub fn execute(self, conn: &mut SqliteConnection) -> super::Result<()> {
@@ -31,22 +39,27 @@ impl PrintArgs {
       return Ok(());
     }
 
-    let html = markdown::to_html(&recipe.markdown_string());
-    let mut file = Builder::new().suffix(".html").tempfile()?;
+    let raw_body = markdown::to_html_with_options(&recipe.markdown_string(), &Options::gfm())?;
+    let (mut file, path) = Builder::new().suffix(".html").tempfile()?.keep()?;
     write!(
       file,
-      r#"
-<html>
-  <head>
-    <title>{recipe}</title>
-  </head>
-  <body>{body}</body>
-</html>"#,
-      recipe = recipe.name,
-      body = html
+      "{}",
+      html! {
+        : doctype::HTML;
+        html {
+          head {
+              title : &recipe.name;
+              style: Raw(HTML_STYLES);
+              script: "window.print();";
+          }
+          body(class = "markdown") {
+            : Raw(&raw_body)
+          }
+        }
+      },
     )?;
 
-    open::that(file.path())?;
+    open::that(path)?;
 
     Ok(())
   }
