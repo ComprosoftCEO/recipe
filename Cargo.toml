@@ -1,11 +1,15 @@
 [package]
 name = "recipe"
 version = "0.1.0"
+description = "Manage a recipe database"
+authors = ["Bryan McClain <bamcclain10@gmail.com>"]
 edition = "2021"
 
 [dependencies]
+clap = { version = "4.3.11", features = ["derive"] }
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = "2.1.0"
+paste = "1.0.13"
 
 # Bundle SQLite3 with the code so it compiles on Windows
 libsqlite3-sys = { version = "*", features = [ "bundled" ] }

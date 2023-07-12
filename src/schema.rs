@@ -2,7 +2,7 @@ table! {
     ingredients (id) {
         id -> Integer,
         name -> Text,
-        notes -> Text,
+        notes_markdown -> Text,
     }
 }
 
@@ -11,7 +11,7 @@ table! {
         recipe_id -> Integer,
         ingredient_id -> Integer,
         quantity -> Text,
-        notes -> Text,
+        notes_markdown -> Text,
     }
 }
 
@@ -26,8 +26,8 @@ table! {
     recipes (id) {
         id -> Integer,
         name -> Text,
-        instructions -> Text,
-        notes -> Text,
+        instructions_markdown -> Text,
+        notes_markdown -> Text,
     }
 }
 
@@ -35,7 +35,7 @@ table! {
     tags (id) {
         id -> Integer,
         name -> Text,
-        description -> Text,
+        description_markdown -> Text,
     }
 }
 

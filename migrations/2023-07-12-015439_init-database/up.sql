@@ -1,8 +1,8 @@
 CREATE TABLE recipes (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  instructions TEXT NOT NULL,
-  notes TEXT NOT NULL
+  instructions_markdown TEXT NOT NULL,
+  notes_markdown TEXT NOT NULL
 );
 
 -- Searching recipes by name is very common
@@ -11,14 +11,14 @@ CREATE INDEX recipes_name_index ON recipes (name);
 CREATE TABLE ingredients (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  notes TEXT NOT NULL
+  notes_markdown TEXT NOT NULL
 );
 
 CREATE TABLE recipe_ingredients (
   recipe_id INTEGER NOT NULL,
   ingredient_id INTEGER NOT NULL,
   quantity VARCHAR(255) NOT NULL, -- Text is simpler than trying to store all units
-  notes TEXT NOT NULL,
+  notes_markdown TEXT NOT NULL,
 
   PRIMARY KEY (recipe_id, ingredient_id),
   FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
@@ -28,7 +28,7 @@ CREATE TABLE recipe_ingredients (
 CREATE TABLE tags (
   id INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL
+  description_markdown TEXT NOT NULL
 );
 
 CREATE TABLE recipe_tags (
