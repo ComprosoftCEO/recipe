@@ -9,7 +9,10 @@ edition = "2021"
 clap = { version = "4.3.11", features = ["derive"] }
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = "2.1.0"
+inquire = { version = "0.6.2", features = ["editor"] }
 paste = "1.0.13"
 
 # Bundle SQLite3 with the code so it compiles on Windows
-libsqlite3-sys = { version = "*", features = [ "bundled" ] }
+[dependencies.libsqlite3-sys]
+version = "*"
+features = [ "bundled" ]
