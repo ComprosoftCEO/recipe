@@ -548,7 +548,7 @@ macro_rules! has_many(
       pub fn [<delete_all_ $func_base>](
         &self,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$child>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         use diesel::delete;
         use diesel::prelude::*;
 
@@ -558,7 +558,7 @@ macro_rules! has_many(
               .eq(<&Self as diesel::associations::Identifiable>::id(&self)),
           ),
         )
-        .get_results::<$child>(conn)
+        .execute(conn)
       }
     }
 
@@ -567,7 +567,7 @@ macro_rules! has_many(
       pub fn [<delete_all_ $func_base _from_id>](
         id: <&Self as diesel::associations::Identifiable>::Id,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$child>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         use diesel::prelude::*;
         use diesel::delete;
 
@@ -577,7 +577,7 @@ macro_rules! has_many(
               .eq(id),
           ),
         )
-        .get_results::<$child>(conn)
+        .execute(conn)
       }
     }
   };
@@ -725,7 +725,7 @@ macro_rules! has_many(
       pub fn [<remove_all_ $func_base>](
         &self,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$through>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         use diesel::delete;
         use diesel::prelude::*;
 
@@ -734,7 +734,7 @@ macro_rules! has_many(
             <$through as diesel::associations::BelongsTo<Self>>::foreign_key_column()
               .eq(<&Self as diesel::associations::Identifiable>::id(&self)),
           )
-        ).get_results::<$through>(conn)
+        ).execute(conn)
       }
     }
 
@@ -744,7 +744,7 @@ macro_rules! has_many(
       pub fn [<remove_all_ $func_base _from_id>](
         id: <&Self as diesel::associations::Identifiable>::Id,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$through>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         use diesel::delete;
         use diesel::prelude::*;
 
@@ -753,7 +753,7 @@ macro_rules! has_many(
             <$through as diesel::associations::BelongsTo<Self>>::foreign_key_column()
               .eq(id),
           )
-        ).get_results::<$through>(conn)
+        ).execute(conn)
       }
     }
 
@@ -763,7 +763,7 @@ macro_rules! has_many(
         &self,
         list: impl std::iter::IntoIterator<Item = &'a $child>,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$through>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         let ids_list = list.into_iter().map(|item| <&$child as diesel::associations::Identifiable>::id(&item));
         Self::[<set_ $func_base _ids_from_id>](<&Self as diesel::associations::Identifiable>::id(&self), ids_list, conn)
       }
@@ -775,7 +775,7 @@ macro_rules! has_many(
         &self,
         ids_list: impl std::iter::IntoIterator<Item = &'a <$through as diesel::associations::BelongsTo<$child>>::ForeignKey>,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$through>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         Self::[<set_ $func_base _ids_from_id>](<&Self as diesel::associations::Identifiable>::id(&self), ids_list, conn)
       }
     }
@@ -786,7 +786,7 @@ macro_rules! has_many(
         id: <&Self as diesel::associations::Identifiable>::Id,
         list: impl std::iter::IntoIterator<Item = &'a $child>,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$through>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         let ids_list = list.into_iter().map(|item| <&$child as diesel::associations::Identifiable>::id(&item));
         Self::[<set_ $func_base _ids_from_id>](id, ids_list, conn)
       }
@@ -798,12 +798,12 @@ macro_rules! has_many(
         id: <&Self as diesel::associations::Identifiable>::Id,
         ids_list: impl std::iter::IntoIterator<Item = &'a <$through as diesel::associations::BelongsTo<$child>>::ForeignKey>,
         conn: &mut diesel::SqliteConnection,
-      ) -> diesel::prelude::QueryResult<Vec<$through>> {
+      ) -> diesel::prelude::QueryResult<usize> {
         Self::[<remove_all_ $func_base _from_id>](id, conn)?;
 
         let new_entries: Vec<$through> = ids_list
           .into_iter()
-          .map(|item| <$through as crate::db::ManyToManyConstructor<Self, $child>>::new(id, item))
+          .map(|item| <$through as crate::models::ManyToManyConstructor<Self, $child>>::new(id, item))
           .collect();
 
         Ok($through::insert_list(&new_entries, conn)?)

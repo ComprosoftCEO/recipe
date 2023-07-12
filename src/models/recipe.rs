@@ -22,6 +22,12 @@ pub struct RecipeConstructor<'s> {
 impl Recipe {
   model_base!(order by recipes::name.asc());
 
+  has_many!(RecipeIngredient);
+  has_many!(Ingredient through RecipeIngredient, order by recipe_ingredients::display_order.asc());
+
+  has_many!(RecipeTag);
+  has_many!(Tag through RecipeTag, order by tags::name.asc());
+
   pub fn markdown_string(&self) -> String {
     RecipeConstructor {
       name: &self.name,
