@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 
-use super::lower;
+use super::{lower, RecipeIngredient};
 use crate::schema::ingredients;
 
 #[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset)]
@@ -31,6 +31,10 @@ impl Ingredient {
     }
 
     query.get_results(conn)
+  }
+
+  pub fn markdown_string(&self, recipe_ingredient: &RecipeIngredient) -> String {
+    recipe_ingredient.markdown_string(self)
   }
 }
 

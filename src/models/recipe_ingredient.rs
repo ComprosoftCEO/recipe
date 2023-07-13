@@ -32,35 +32,20 @@ impl RecipeIngredient {
     }
   }
 
-  /// Note: ingredient ID will need to be filled in later using TUI
-  pub fn parse_from_str(input: &str, recipe_id: i32) -> Vec<(&str, RecipeIngredient)> {
-    let mut lines = input.lines().map(|s| s.trim()).filter(|s| !s.is_empty()).peekable();
+  pub fn markdown_string(&self, ingredient: &Ingredient) -> String {
+    let quantity = self.quantity.trim();
+    let ingredient_string = if quantity.len() > 0 {
+      format!("{} {}", quantity, ingredient.name)
+    } else {
+      format!("{}", ingredient.name)
+    };
 
-    let mut display_order = 1;
-    let mut result = Vec::new();
-    while let Some(line) = lines.next() {
-      let (quantity, ingredient) = line.split_once(":").unwrap_or(("", line));
-
-      // Next line is notes if it starts with "- "
-      let notes = match lines.peek() {
-        Some(next_line) if next_line.starts_with("- ") => lines.next().unwrap().strip_prefix("- ").unwrap(),
-        _ => "",
-      };
-
-      result.push((
-        ingredient,
-        RecipeIngredient {
-          recipe_id,
-          ingredient_id: -1, // Populated later
-          display_order,
-          quantity: quantity.trim().to_string(),
-          notes_markdown: notes.trim().to_string(),
-        },
-      ));
-      display_order += 1;
+    let notes_markdown = self.notes_markdown.trim();
+    if notes_markdown.len() > 0 {
+      format!("- {}\n  - {}", ingredient_string, notes_markdown)
+    } else {
+      format!("- {}", ingredient_string)
     }
-
-    return result;
   }
 }
 

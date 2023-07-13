@@ -1,5 +1,7 @@
 use diesel::prelude::*;
+use itertools::Itertools;
 
+use crate::models::{Ingredient, RecipeIngredient};
 use crate::schema::recipes;
 
 #[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset)]
@@ -28,29 +30,40 @@ impl Recipe {
   has_many!(RecipeTag);
   has_many!(Tag through RecipeTag, order by tags::name.asc());
 
-  pub fn markdown_string(&self) -> String {
-    RecipeConstructor {
-      name: &self.name,
-      instructions_markdown: &self.instructions_markdown,
-      notes_markdown: &self.notes_markdown,
-    }
-    .markdown_string()
+  pub fn get_ingredients_with_metadata(
+    &self,
+    conn: &mut SqliteConnection,
+  ) -> QueryResult<Vec<(Ingredient, RecipeIngredient)>> {
+    use crate::schema::ingredients::dsl::ingredients;
+    use crate::schema::recipe_ingredients::dsl::{display_order, recipe_id, recipe_ingredients};
+
+    ingredients
+      .inner_join(recipe_ingredients)
+      .filter(recipe_id.eq(self.id))
+      .order_by(display_order.asc())
+      .get_results::<(Ingredient, RecipeIngredient)>(conn)
+  }
+
+  pub fn markdown_string(&self, conn: &mut SqliteConnection) -> QueryResult<String> {
+    let ingredients_str = self
+      .get_ingredients_with_metadata(conn)?
+      .into_iter()
+      .map(|(i, ri)| i.markdown_string(&ri))
+      .join("\n");
+
+    let notes = if self.notes_markdown.len() > 0 {
+      format!("\n**Notes:**\n{}", self.notes_markdown)
+    } else {
+      "".into()
+    };
+
+    Ok(format!(
+      "# {}\n---\n## Ingredients\n{}\n\n## Instructions\n{}\n{}",
+      self.name, ingredients_str, self.instructions_markdown, notes,
+    ))
   }
 }
 
 impl<'s> RecipeConstructor<'s> {
   model_creates!(Recipe);
-
-  pub fn markdown_string(&self) -> String {
-    let instructions = self.instructions_markdown.trim();
-    let notes = self.notes_markdown.trim();
-
-    let notes = if notes.len() > 0 {
-      format!("\n**Notes:**\n{notes}")
-    } else {
-      "".into()
-    };
-
-    format!("## {}\n\n{}\n{}", self.name, instructions, notes,)
-  }
 }

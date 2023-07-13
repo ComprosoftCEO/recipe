@@ -12,6 +12,6 @@ pub struct CreateArgs {
 
 impl CreateArgs {
   pub fn execute(self, conn: &mut SqliteConnection) -> super::Result<()> {
-    RecipeEditor::new().edit(conn)
+    RecipeEditor::new(conn)?.edit(conn)
   }
 }
