@@ -4,11 +4,7 @@ use diesel::SqliteConnection;
 use crate::ui::RecipeEditor;
 
 #[derive(Args)]
-pub struct CreateArgs {
-  /// Optional name for the recipe
-  #[clap(short, long)]
-  name: Option<String>,
-}
+pub struct CreateArgs;
 
 impl CreateArgs {
   pub fn execute(self, conn: &mut SqliteConnection) -> super::Result<()> {

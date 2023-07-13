@@ -13,7 +13,7 @@ const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 #[clap(author, version, about, long_about = None)]
 struct Opt {
   /// Database file to use
-  #[clap(short, long, global = true, default_value_t = String::from("recipes.db"))]
+  #[clap(short = 'f', long, global = true, default_value_t = String::from("recipes.db"))]
   database_file: String,
 
   #[clap(subcommand)]

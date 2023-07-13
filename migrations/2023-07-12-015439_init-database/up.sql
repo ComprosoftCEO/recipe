@@ -23,7 +23,7 @@ CREATE TABLE recipe_ingredients (
 
   PRIMARY KEY (recipe_id, ingredient_id),
   FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE,
-  FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE
+  FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE tags (

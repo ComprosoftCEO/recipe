@@ -3,6 +3,7 @@ mod delete;
 mod edit;
 mod list;
 mod print;
+mod tag;
 
 use clap::Subcommand;
 use diesel::SqliteConnection;
@@ -27,6 +28,12 @@ pub enum OptSubcommand {
 
   /// Delete a recipe
   Delete(delete::DeleteArgs),
+
+  /// Manage tags
+  Tag {
+    #[clap(subcommand)]
+    subcommand: tag::TagSubcommand,
+  },
 }
 
 impl OptSubcommand {
@@ -38,6 +45,7 @@ impl OptSubcommand {
       Edit(args) => args.execute(conn),
       Print(args) => args.execute(conn),
       Delete(args) => args.execute(conn),
+      Tag { subcommand } => subcommand.execute(conn),
     }
   }
 }
