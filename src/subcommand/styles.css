@@ -1,0 +1,13 @@
+.markdown h1 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.markdown ul {
+  padding-left: 30px;
+}
+
+.markdown ol {
+  padding-left: 30px;
+}

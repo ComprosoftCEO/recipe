@@ -17,12 +17,6 @@ pub struct PrintArgs {
   web: bool,
 }
 
-// CSS styles
-const HTML_STYLES: &str = r#"
-.markdown {
-}
-"#;
-
 impl PrintArgs {
   pub fn execute(self, conn: &mut SqliteConnection) -> super::Result<()> {
     let recipe = match Recipe::find_optional(&self.id, conn)? {
@@ -35,11 +29,11 @@ impl PrintArgs {
 
     if !self.web {
       let skin = MadSkin::default();
-      skin.print_text(&recipe.markdown_string());
+      skin.print_text(&recipe.markdown_string(conn)?);
       return Ok(());
     }
 
-    let raw_body = markdown::to_html_with_options(&recipe.markdown_string(), &Options::gfm())?;
+    let raw_body = markdown::to_html_with_options(&recipe.markdown_string(conn)?, &Options::gfm())?;
     let (mut file, path) = Builder::new().suffix(".html").tempfile()?.keep()?;
     write!(
       file,
@@ -49,7 +43,7 @@ impl PrintArgs {
         html {
           head {
               title : &recipe.name;
-              style: Raw(HTML_STYLES);
+              style: Raw(include_str!("styles.css"));
               script: "window.print();";
           }
           body(class = "markdown") {
