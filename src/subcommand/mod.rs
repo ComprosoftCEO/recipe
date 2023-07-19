@@ -1,5 +1,6 @@
 mod create;
 mod delete;
+mod dump;
 mod edit;
 mod list;
 mod print;
@@ -29,6 +30,9 @@ pub enum OptSubcommand {
   /// Delete a recipe
   Delete(delete::DeleteArgs),
 
+  /// Dump the entire database to SQL and markdown files
+  Dump(dump::DumpArgs),
+
   /// Manage tags
   Tag {
     #[clap(subcommand)]
@@ -37,7 +41,7 @@ pub enum OptSubcommand {
 }
 
 impl OptSubcommand {
-  pub fn execute(self, conn: &mut SqliteConnection) -> Result<()> {
+  pub fn execute(self, conn: &mut SqliteConnection, database_file: &str) -> Result<()> {
     use OptSubcommand::*;
     match self {
       List(args) => args.execute(conn),
@@ -45,6 +49,7 @@ impl OptSubcommand {
       Edit(args) => args.execute(conn),
       Print(args) => args.execute(conn),
       Delete(args) => args.execute(conn),
+      Dump(args) => args.execute(conn, database_file),
       Tag { subcommand } => subcommand.execute(conn),
     }
   }

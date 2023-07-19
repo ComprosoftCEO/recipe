@@ -10,15 +10,8 @@ use crate::models::IngredientConstructor;
 use crate::models::{Ingredient, Recipe, RecipeConstructor, RecipeIngredient, Tag};
 use crate::subcommand;
 
-const PLACEHOLDER_INGREDIENTS: &str = r#"1 Cup: Ingredient 1
-2/3 Tbsp: Ingredient 2
-- This ingredient has a _note_"#;
-
-const PLACEHOLDER_INSTRUCTIONS: &str = r#"1. Mix flour, milk, and **eggs** together.
-2. Slowly mix in the chocolate chips. _Don't stir too much_
-3. Add additional steps as needed ...
-
-Bake at 450°F for 20 minutes. Serve hot."#;
+const PLACEHOLDER_INGREDIENTS: &str = include_str!("placeholder-ingredients.txt");
+const PLACEHOLDER_INSTRUCTIONS: &str = include_str!("placeholder-instructions.md");
 
 #[derive(Debug, Clone)]
 pub struct RecipeEditor {

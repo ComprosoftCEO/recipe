@@ -1,8 +1,9 @@
 use diesel::prelude::*;
+use gtmpl_derive::Gtmpl;
 
 use crate::schema::tags;
 
-#[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset, Gtmpl)]
 #[diesel(treat_none_as_null = true)]
 pub struct Tag {
   pub id: String,

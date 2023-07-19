@@ -1,9 +1,10 @@
 use diesel::prelude::*;
+use gtmpl_derive::Gtmpl;
 
 use super::{lower, RecipeIngredient};
 use crate::schema::ingredients;
 
-#[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset, Gtmpl)]
 #[diesel(treat_none_as_null = true)]
 pub struct Ingredient {
   pub id: i32,

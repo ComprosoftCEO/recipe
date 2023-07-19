@@ -1,10 +1,12 @@
+use convert_case::{Case, Casing};
 use diesel::prelude::*;
+use gtmpl_derive::Gtmpl;
 use itertools::Itertools;
 
 use crate::models::{Ingredient, RecipeIngredient};
 use crate::schema::recipes;
 
-#[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Insertable, Identifiable, AsChangeset, Gtmpl)]
 #[diesel(treat_none_as_null = true)]
 pub struct Recipe {
   pub id: i32,
@@ -61,6 +63,10 @@ impl Recipe {
       "# {}\n---\n## Ingredients\n{}\n\n## Instructions\n{}\n{}",
       self.name, ingredients_str, self.instructions_markdown, notes,
     ))
+  }
+
+  pub fn get_filename(&self) -> String {
+    format!("{}.md", self.name.to_case(Case::Kebab))
   }
 }
 

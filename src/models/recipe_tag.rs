@@ -1,9 +1,10 @@
 use diesel::prelude::*;
+use gtmpl_derive::Gtmpl;
 
 use crate::models::{ManyToManyConstructor, Recipe, Tag};
 use crate::schema::recipe_tags;
 
-#[derive(Debug, Clone, Queryable, Insertable, Identifiable, Associations)]
+#[derive(Debug, Clone, Queryable, Insertable, Identifiable, Associations, Gtmpl)]
 #[diesel(primary_key(recipe_id, tag_id))]
 #[diesel(treat_none_as_null = true)]
 #[diesel(belongs_to(Recipe))]
