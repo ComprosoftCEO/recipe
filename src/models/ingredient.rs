@@ -37,6 +37,6 @@ impl Ingredient {
   }
 }
 
-impl<'s> IngredientConstructor<'s> {
+impl IngredientConstructor<'_> {
   model_creates!(Ingredient);
 }
