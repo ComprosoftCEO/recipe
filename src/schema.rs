@@ -4,7 +4,6 @@ diesel::table! {
     ingredients (id) {
         id -> Integer,
         name -> Text,
-        notes_markdown -> Text,
     }
 }
 
