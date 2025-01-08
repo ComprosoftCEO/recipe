@@ -1,3 +1,11 @@
 1 Cup: Ingredient 1
 2/3 Tbsp: Ingredient 2
 - This ingredient has a _note_
+
+Common Fractions:
+2: ½
+3: ⅓ ⅔
+4: ¼ ¾
+5: ⅕ ⅖ ⅗ ⅘
+6: ⅙ ⅚
+8: ⅛ ⅜ ⅝ ⅞
