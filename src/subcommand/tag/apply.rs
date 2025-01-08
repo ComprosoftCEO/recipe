@@ -31,7 +31,7 @@ impl ApplyArgs {
       .collect();
 
     let new_selected_recipes = MultiSelect::new(
-      &format!("Recipes to tag as: {}", tag.name),
+      &format!("Recipes to tag as \"{}\":", tag.name),
       all_recipes.iter().map(|r| &r.name).collect(),
     )
     .with_default(&selected_recipes)
@@ -52,9 +52,9 @@ impl ApplyArgs {
     })?;
 
     if new_selected_recipes.len() != 1 {
-      println!("Tagged {} recipes as: {}", new_selected_recipes.len(), tag.name);
+      println!("{} recipes tagged as: {}", new_selected_recipes.len(), tag.name);
     } else {
-      println!("Tagged 1 recipe as: {}", tag.name);
+      println!("1 recipe tagged as: {}", tag.name);
     }
 
     Ok(())
