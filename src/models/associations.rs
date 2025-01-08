@@ -37,14 +37,14 @@ macro_rules! model_base(
   (order by $order:expr) => {
     model_base!();
     paste::item! {
-      model_base!(@ order by crate::schema::$order);
+      model_base!(@ order by $crate::schema::$order);
     }
   };
 
   (no update, order by $order:expr) => {
     model_base!(no update);
     paste::item! {
-      model_base!(@ order by crate::schema::$order);
+      model_base!(@ order by $crate::schema::$order);
     }
   };
 
@@ -228,7 +228,7 @@ macro_rules! belongs_to(
   };
 
   ($parent:ident, $func_base:ident) => {
-    belongs_to!(@ crate::models::$parent, $func_base);
+    belongs_to!(@ $crate::models::$parent, $func_base);
   };
 
   (@ $parent:path, $func_base:ident) => {
@@ -286,7 +286,7 @@ macro_rules! has_one(
   };
 
   ($child:ident, $func_base:ident) => {
-    has_one!(@ crate::models::$child, $func_base);
+    has_one!(@ $crate::models::$child, $func_base);
   };
 
   // Explicit function base
@@ -375,7 +375,7 @@ macro_rules! has_zero_or_one(
   };
 
   ($child:ident, $func_base:ident) => {
-    has_zero_or_one!(@ crate::models::$child, $func_base);
+    has_zero_or_one!(@ $crate::models::$child, $func_base);
   };
 
   // Explicit function base
@@ -476,13 +476,13 @@ macro_rules! has_many(
   };
 
   ($child:ident, $func_base:ident) => {
-    has_many!(@ crate::models::$child, $func_base);
+    has_many!(@ $crate::models::$child, $func_base);
   };
 
   ($child:ident, order by $order:expr, $func_base:ident) => {
-    has_many!(@ crate::models::$child, $func_base);
+    has_many!(@ $crate::models::$child, $func_base);
     paste::item! {
-      has_many!(@ crate::models::$child, order by crate::schema::$order, $func_base);
+      has_many!(@ $crate::models::$child, order by $crate::schema::$order, $func_base);
     }
   };
 
@@ -633,13 +633,13 @@ macro_rules! has_many(
   );
 
   ($child:ident through $through:ident, $func_base:ident) => {
-    has_many!(@ crate::models::$child => crate::models::$through, $func_base);
+    has_many!(@ $crate::models::$child => $crate::models::$through, $func_base);
   };
 
   ($child:ident through $through:ident, order by $order:expr, $func_base:ident) => {
-    has_many!(@ crate::models::$child => crate::models::$through, $func_base);
+    has_many!(@ $crate::models::$child => $crate::models::$through, $func_base);
     paste::item! {
-      has_many!(@ crate::models::$child => crate::models::$through, order by crate::schema::$order, $func_base);
+      has_many!(@ $crate::models::$child => $crate::models::$through, order by $crate::schema::$order, $func_base);
     }
   };
 
@@ -803,7 +803,7 @@ macro_rules! has_many(
 
         let new_entries: Vec<$through> = ids_list
           .into_iter()
-          .map(|item| <$through as crate::models::ManyToManyConstructor<Self, $child>>::new(id, item))
+          .map(|item| <$through as $crate::models::ManyToManyConstructor<Self, $child>>::new(id, item))
           .collect();
 
         Ok($through::insert_list(&new_entries, conn)?)
