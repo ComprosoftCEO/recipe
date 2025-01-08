@@ -1,6 +1,7 @@
 1 Cup: Ingredient 1
 2/3 Tbsp: Ingredient 2
 - This ingredient has a _note_
+Ingredient Without Quantity
 
 Common Fractions:
 2: ½

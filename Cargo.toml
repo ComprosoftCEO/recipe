@@ -1,6 +1,6 @@
 [package]
 name = "recipe"
-version = "0.2.0"
+version = "0.2.1"
 description = "Manage a recipe database"
 authors = ["Bryan McClain <bamcclain10@gmail.com>"]
 edition = "2021"
@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.3.11", features = ["derive", "env"] }
 convert_case = "0.6.0"
+crossterm = "0.28.1"
 diesel = { version = "2.1.0", features = ["sqlite"] }
 diesel_migrations = "2.1.0"
 gtmpl = "0.7.1"
