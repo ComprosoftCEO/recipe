@@ -1,3 +1,4 @@
+mod apply;
 mod create;
 mod delete;
 mod edit;
@@ -21,6 +22,9 @@ pub enum TagSubcommand {
 
   /// Delete a tag
   Delete(delete::DeleteArgs),
+
+  /// Set which recipes have the tag applied
+  Apply(apply::ApplyArgs),
 }
 
 impl TagSubcommand {
@@ -31,6 +35,7 @@ impl TagSubcommand {
       Create(args) => args.execute(conn),
       Edit(args) => args.execute(conn),
       Delete(args) => args.execute(conn),
+      Apply(args) => args.execute(conn),
     }
   }
 }
