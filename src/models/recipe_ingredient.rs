@@ -35,14 +35,14 @@ impl RecipeIngredient {
 
   pub fn markdown_string(&self, ingredient: &Ingredient) -> String {
     let quantity = self.quantity.trim();
-    let ingredient_string = if quantity.len() > 0 {
+    let ingredient_string = if !quantity.is_empty() {
       format!("{} {}", quantity, ingredient.name)
     } else {
-      format!("{}", ingredient.name)
+      ingredient.name.to_string()
     };
 
     let notes_markdown = self.notes_markdown.trim();
-    if notes_markdown.len() > 0 {
+    if !notes_markdown.is_empty() {
       format!("- {}\n  - {}", ingredient_string, notes_markdown)
     } else {
       format!("- {}", ingredient_string)

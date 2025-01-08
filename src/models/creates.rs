@@ -10,7 +10,7 @@ macro_rules! model_creates(
   };
 
   ($output_model:ident, $func_base:ident) => {
-    model_creates!(@ crate::models::$output_model, $func_base);
+    model_creates!(@ $crate::models::$output_model, $func_base);
   };
 
   (@ $output_model:path, $func_base:ident) => {
@@ -30,7 +30,7 @@ macro_rules! model_creates(
 
 
         <$output_model as diesel::associations::HasTable>::table()
-          .find(crate::models::last_insert_rowid())
+          .find($crate::models::last_insert_rowid())
           .get_result::<$output_model>(conn)
       }
     }

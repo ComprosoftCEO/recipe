@@ -98,7 +98,7 @@ impl RecipeEditor {
         .with_predefined_text(&self.notes_markdown)
         .prompt()?;
 
-      if self.all_tags.len() > 0 {
+      if !self.all_tags.is_empty() {
         self.selected_tags = MultiSelect::new("Recipe Tags:", self.all_tags.iter().map(|t| &t.name).collect())
           .with_default(&self.selected_tags)
           .raw_prompt()?
@@ -125,7 +125,7 @@ impl RecipeEditor {
   }
 
   fn get_ingredients_text(&self) -> String {
-    if self.ingredients.len() == 0 {
+    if self.ingredients.is_empty() {
       return PLACEHOLDER_INGREDIENTS.into();
     }
 
@@ -133,7 +133,7 @@ impl RecipeEditor {
       .ingredients
       .iter()
       .map(|i| {
-        if i.notes_markdown.len() > 0 {
+        if !i.notes_markdown.is_empty() {
           format!("{}: {}\n- {}", i.quantity, i.name, i.notes_markdown)
         } else {
           format!("{}: {}", i.quantity, i.name)
@@ -186,7 +186,7 @@ impl RecipeEditor {
   fn print_current_state(&self) {
     let ingredients_str = self.ingredients.iter().map(IngredientEntry::markdown_string).join("\n");
 
-    let notes = if self.notes_markdown.len() > 0 {
+    let notes = if !self.notes_markdown.is_empty() {
       format!("\n**Notes:**\n{}", self.notes_markdown)
     } else {
       "".into()
@@ -273,14 +273,14 @@ impl RecipeEditor {
 impl IngredientEntry {
   pub fn markdown_string(&self) -> String {
     let quantity = self.quantity.trim();
-    let ingredient_string = if quantity.len() > 0 {
+    let ingredient_string = if !quantity.is_empty() {
       format!("{} {}", quantity, self.name)
     } else {
-      format!("{}", self.name)
+      self.name.to_string()
     };
 
     let notes_markdown = self.notes_markdown.trim();
-    if notes_markdown.len() > 0 {
+    if !notes_markdown.is_empty() {
       format!("- {}\n  - {}", ingredient_string, notes_markdown)
     } else {
       format!("- {}", ingredient_string)

@@ -25,4 +25,4 @@ termimad = "0.23.1"
 # Bundle SQLite3 with the code so it compiles on Windows
 [dependencies.libsqlite3-sys]
 version = "*"
-features = [ "bundled" ]
+features = ["bundled"]

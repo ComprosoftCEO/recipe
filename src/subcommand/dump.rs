@@ -94,7 +94,7 @@ impl DumpArgs {
     for p in paths {
       path.push(p);
     }
-    Ok(create_dir_all(path)?)
+    create_dir_all(path)
   }
 
   fn create_file(&self, paths: &[&str]) -> io::Result<File> {
@@ -102,7 +102,7 @@ impl DumpArgs {
     for p in paths {
       path.push(p);
     }
-    Ok(File::create(path)?)
+    File::create(path)
   }
 
   fn build_index_template(&self, conn: &mut SqliteConnection) -> super::Result<String> {

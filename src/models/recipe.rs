@@ -53,7 +53,7 @@ impl Recipe {
       .map(|(i, ri)| i.markdown_string(&ri))
       .join("\n");
 
-    let notes = if self.notes_markdown.len() > 0 {
+    let notes = if !self.notes_markdown.is_empty() {
       format!("\n**Notes:**\n{}", self.notes_markdown)
     } else {
       "".into()
