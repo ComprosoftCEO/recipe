@@ -9,14 +9,12 @@ use crate::schema::ingredients;
 pub struct Ingredient {
   pub id: i32,
   pub name: String,
-  pub notes_markdown: String,
 }
 
 #[derive(Debug, Clone, Insertable)]
 #[diesel(table_name = ingredients)]
 pub struct IngredientConstructor<'s> {
   pub name: &'s str,
-  pub notes_markdown: &'s str,
 }
 
 impl Ingredient {
@@ -39,6 +37,6 @@ impl Ingredient {
   }
 }
 
-impl<'s> IngredientConstructor<'s> {
+impl IngredientConstructor<'_> {
   model_creates!(Ingredient);
 }

@@ -70,6 +70,6 @@ impl Recipe {
   }
 }
 
-impl<'s> RecipeConstructor<'s> {
+impl RecipeConstructor<'_> {
   model_creates!(Recipe);
 }

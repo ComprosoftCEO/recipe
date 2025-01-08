@@ -237,7 +237,6 @@ impl RecipeEditor {
     for ingredient in self.ingredients.iter_mut().filter(|i| i.ingredient_id.is_none()) {
       let new_ingredient = IngredientConstructor {
         name: &ingredient.name,
-        notes_markdown: &ingredient.notes_markdown,
       }
       .insert_ingredient(conn)?;
 
