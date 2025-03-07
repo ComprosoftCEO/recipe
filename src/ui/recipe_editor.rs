@@ -1,8 +1,10 @@
+use crossterm::style::Stylize;
 use diesel::prelude::*;
 use diesel::SqliteConnection;
 use inquire::validator::ValueRequiredValidator;
 use inquire::{Confirm, Editor, MultiSelect, Select, Text};
 use itertools::Itertools;
+use std::collections::BTreeSet;
 use std::iter;
 use termimad::MadSkin;
 
@@ -81,12 +83,24 @@ impl RecipeEditor {
         .with_validator(ValueRequiredValidator::new("Recipe name cannot be empty"))
         .prompt()?;
 
-      let ingredients_string = Editor::new("Ingredients")
-        .with_file_extension(".md")
-        .with_predefined_text(&self.get_ingredients_text())
-        .prompt()?;
+      loop {
+        let ingredients_string = Editor::new("Ingredients")
+          .with_file_extension(".md")
+          .with_predefined_text(&self.get_ingredients_text())
+          .prompt()?;
 
-      self.parse_and_set_ingredients_from_str(&ingredients_string, conn)?;
+        self.parse_and_set_ingredients_from_str(&ingredients_string, conn)?;
+
+        // Special case: make sure we didn't specify the same ingredient twice
+        let duplicate_ingredients = self.get_duplicate_ingredients();
+        if duplicate_ingredients.is_empty() {
+          break;
+        }
+
+        println!("{}: duplicate ingredients found in list", "Error".red());
+        let skin = MadSkin::default();
+        skin.print_text(&duplicate_ingredients.iter().map(|i| format!("- {}", i)).join("\n"));
+      }
 
       self.instructions_markdown = Editor::new("Instructions")
         .with_file_extension(".md")
@@ -183,6 +197,21 @@ impl RecipeEditor {
     Ok(())
   }
 
+  fn get_duplicate_ingredients<'a>(&'a self) -> BTreeSet<&'a str> {
+    let mut all_ingredients = BTreeSet::new();
+    let mut duplicate_ingredients = BTreeSet::new();
+
+    for ingredient in self.ingredients.iter() {
+      if all_ingredients.contains(ingredient.name.as_str()) {
+        duplicate_ingredients.insert(ingredient.name.as_str());
+      } else {
+        all_ingredients.insert(ingredient.name.as_str());
+      }
+    }
+
+    duplicate_ingredients
+  }
+
   fn print_current_state(&self) {
     let ingredients_str = self.ingredients.iter().map(IngredientEntry::markdown_string).join("\n");
 
@@ -235,10 +264,7 @@ impl RecipeEditor {
   fn handle_ingredients_and_tags(mut self, recipe: &Recipe, conn: &mut SqliteConnection) -> QueryResult<()> {
     // Create ingredients that don't exist
     for ingredient in self.ingredients.iter_mut().filter(|i| i.ingredient_id.is_none()) {
-      let new_ingredient = IngredientConstructor {
-        name: &ingredient.name,
-      }
-      .insert_ingredient(conn)?;
+      let new_ingredient = IngredientConstructor { name: &ingredient.name }.insert_ingredient(conn)?;
 
       // Set the created IDs
       ingredient.ingredient_id = Some(new_ingredient.id);
